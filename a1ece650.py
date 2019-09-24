@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 import re
-# import traceback
+import traceback
 # YOUR CODE GOES HERE
 class Point(object):
     def __init__(self, x, y):
@@ -148,11 +148,11 @@ def change_street(street_info, street_info_dict):
 
 def add_to_edges(points_list, points_for_edges):
     # TODO if end-points == intersection points
-    if (points_list[0].get_x() == points_list[1].get_x() and points_list[0].get_y() == points_list[1].get_y()):
-        del points_list[0]
-
-    if (points_list[-1].get_x() == points_list[1].get_x() and points_list[-1].get_y() == points_list[1].get_y()):
-        del points_list[-1]
+    # if (points_list[0].get_x() == points_list[1].get_x() and points_list[0].get_y() == points_list[1].get_y()):
+    #     del points_list[0]
+    #
+    # if (points_list[-1].get_x() == points_list[1].get_x() and points_list[-1].get_y() == points_list[1].get_y()):
+    #     del points_list[-1]
 
     if len(points_for_edges) == 0:
         points_for_edges.append(points_list)
@@ -191,7 +191,7 @@ def add_to_edges(points_list, points_for_edges):
                     points_for_edges.append(points_list)
                     break
                 continue
-
+    print(points_for_edges)
 
 
 def add_to_intersections_list(x, y, intersections_list):
@@ -241,7 +241,21 @@ def find_edges(points_for_edges):
     finded_edges_list = []
     for ps in range(len(points_for_edges)):
         for p in range(len(points_for_edges[ps]) - 1):
-            finded_edges_list.append(Line(points_for_edges[ps][p], points_for_edges[ps][p+1]))
+            if points_for_edges[ps][p].get_x() == points_for_edges[ps][p+1].get_x() and points_for_edges[ps][p].get_y() == points_for_edges[ps][p+1].get_y():
+                continue
+            if len(finded_edges_list) == 0:
+                finded_edges_list.append(Line(points_for_edges[ps][p], points_for_edges[ps][p+1]))
+            else:
+                for i in range(len(finded_edges_list)):
+                    if finded_edges_list[i].get_p1().get_x() == points_for_edges[ps][p].get_x() and finded_edges_list[i].get_p1().get_y() == points_for_edges[ps][p].get_y() and finded_edges_list[i].get_p2().get_x() == points_for_edges[ps][p+1].get_x() and finded_edges_list[i].get_p2().get_y() == points_for_edges[ps][p+1].get_y():
+                        break
+                    else:
+                        if i != len(finded_edges_list) - 1 :
+                            continue
+                        else:
+                            finded_edges_list.append(Line(points_for_edges[ps][p], points_for_edges[ps][p+1]))
+
+
 
     return finded_edges_list
 
@@ -317,7 +331,7 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
                                 add_to_edges([Point(intersection_x1, sorted([ay1, ay2, by1, by2])[0]), Point(intersection_x1, intersection_y1), Point(intersection_x1, sorted([ay1, ay2, by1, by2])[-1])], points_for_edges)
 
                                 add_to_edges([Point(intersection_x1, sorted([ay1, ay2, by1, by2])[0]), Point(intersection_x2, intersection_y2), Point(intersection_x2, sorted([ay1, ay2, by1, by2])[-1])], points_for_edges)
-                            
+
 
                         elif (ax2 - ax1) == 0:
                             ax = ax1
@@ -555,6 +569,7 @@ def main():
             print('read a line:', line)
         except Exception as exp:
             print('Error: ' + str(exp), file=sys.stderr)
+            print(traceback.format_exc())
 
     print('Finished reading input')
     # return exit code 0 on successful termination
