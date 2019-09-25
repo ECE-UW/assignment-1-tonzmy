@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys
 import re
-import traceback
+# import traceback
 # YOUR CODE GOES HERE
 class Point(object):
     def __init__(self, x, y):
@@ -76,7 +76,7 @@ def parse_line(line):
             raise Exception("Wrong format")
         return command, None
     else:
-        raise Exception("unknown commnad")
+        raise Exception("unknown command")
 
 def format_coordinate(x, y):
     #check x
@@ -108,7 +108,7 @@ def get_coordinates(input_info):
     coordinates_start = input_info.find('(')
     string_coordinates = input_info[coordinates_start:]
 
-    r = re.compile(r'([\(]{1}\s*[+-]?[0-9]\s*\,\s*[+-]?[0-9]\s*[\)]{1}\s*)')
+    r = re.compile(r'([\(]{1}\s*[+-]?[0-9]+\s*\,\s*[+-]?[0-9]+\s*[\)]{1}\s*)')
     list_coordinates = r.findall(string_coordinates)
     list_points = []
     for i in range(len(list_coordinates)):
@@ -191,7 +191,7 @@ def add_to_edges(points_list, points_for_edges):
                     points_for_edges.append(points_list)
                     break
                 continue
-    print(points_for_edges)
+
 
 
 def add_to_intersections_list(x, y, intersections_list):
@@ -527,7 +527,6 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
 
 
         display_vertex_result, reversed_result = display_intersections_list(intersections_list, intersections_dict)
-        # print(result)
         edges_result = find_edges(points_for_edges)
         display_edges_result = display_edges(reversed_result, edges_result)
 
@@ -569,7 +568,7 @@ def main():
             print('read a line:', line)
         except Exception as exp:
             print('Error: ' + str(exp), file=sys.stderr)
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
 
     print('Finished reading input')
     # return exit code 0 on successful termination
