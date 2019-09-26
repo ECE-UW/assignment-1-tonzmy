@@ -28,14 +28,14 @@ class Line(object):
 
 def parse_line(line):
 
-    line = line.strip()
+    # line = line.strip()
     if len(line) == 0:
         raise Exception("empty input")
     command = line[0]
 
     # check the format of commmand a
     if command == 'a':
-        r = re.match(r'a[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]+([\(]{1}\s*[+-]?[0-9]+\s*\,\s*[+-]?[0-9]+\s*[\)]{1}\s*){2,}', line)
+        r = re.match(r'^a[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]+([\(]{1}[+-]?[0-9]+\,[+-]?[0-9]+[\)]{1}\s*){2,}$', line)
         if r is None:
             raise Exception("Wrong format")
         start, stop = r.span()
@@ -47,7 +47,7 @@ def parse_line(line):
 
     # check the format of command c
     elif command == 'c':
-        r = re.match(r'c[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]+([\(]{1}\s*[+-]?[0-9]+\s*\,\s*[+-]?[0-9]+\s*[\)]{1}\s*){2,}', line)
+        r = re.match(r'^c[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]+([\(]{1}[+-]?[0-9]+\,[+-]?[0-9]+[\)]{1}\s*){2,}$', line)
         if r is None:
             raise Exception("Wrong format")
         start, stop = r.span()
@@ -59,7 +59,7 @@ def parse_line(line):
 
     # check the format of command r
     elif command == 'r':
-        r = re.match(r'r[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]*', line)
+        r = re.match(r'^r[\s]+[\"]{1}(([a-zA-Z]+[\s]*)+|([\s]+[a-zA-Z]*)+)[\"]{1}[\s]*$', line)
         if r is None:
             raise Exception("Wrong format")
         start, stop = r.span()
@@ -147,7 +147,7 @@ def change_street(street_info, street_info_dict):
 
 
 def add_to_edges(points_list, points_for_edges):
-    # TODO if end-points == intersection points
+
     # if (points_list[0].get_x() == points_list[1].get_x() and points_list[0].get_y() == points_list[1].get_y()):
     #     del points_list[0]
     #
@@ -282,7 +282,6 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
         empty_edge = 'E = {\n}'
         return empty_vertex, empty_edge
     else:
-        intersections_set = set()
         intersections_list = []
         intersections_dict = {}
 
@@ -343,7 +342,7 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
                             intersection_y = float(intersection_x*kb + cb)
 
 
-                            if (float(min(bx1, bx2)) <= intersection_x <= float(max(bx1, bx2))) and (float(min(by1, by2)) <= intersection_y <= float(max(by1, by2))) and (float(min(ay1, ay2)) <= intersection_y <= float(max(ay1, ay2))):
+                            if (float(min(bx1, bx2)) <= intersection_x <= float(max(bx1, bx2))) and (float(min(by1, by2)) <= intersection_y <= float(max(by1, by2))) and (float(min(ax1, ax2)) <= intersection_x <= float(max(ax1, ax2))) and (float(min(ay1, ay2)) <= intersection_y <= float(max(ay1, ay2))):
                                 intersection_x, intersection_y = format_coordinate(intersection_x, intersection_y)
                                 add_to_intersections_list(intersection_x, intersection_y, intersections_list)
                                 add_to_intersections_list(ax1, ay1, intersections_list)
@@ -364,11 +363,6 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
 
                                     add_to_edges([Point(bx2, by2), Point(intersection_x, intersection_y), Point(bx1, by1)], points_for_edges)
 
-                                intersections_set.add(format_coordinate(intersection_x, intersection_y))
-                                intersections_set.add((ax1, ay1))
-                                intersections_set.add((ax2, ay2))
-                                intersections_set.add((bx1, by1))
-                                intersections_set.add((bx2, by2))
                             else:
                                 continue
                         elif (bx2 - bx1) == 0:
@@ -378,7 +372,7 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
                             intersection_x = float(bx)
                             intersection_y = float(intersection_x*ka + ca)
 
-                            if (float(min(ax1, ax2)) <= intersection_x <= float(max(ax1, ax2))) and (float(min(ay1, ay2)) <= intersection_y <= float(max(ay1, ay2))) and (float(min(by1, by2)) <= intersection_y <= float(max(by1, by2))):
+                            if (float(min(bx1, bx2)) <= intersection_x <= float(max(bx1, bx2))) and (float(min(by1, by2)) <= intersection_y <= float(max(by1, by2))) and (float(min(ax1, ax2)) <= intersection_x <= float(max(ax1, ax2))) and (float(min(ay1, ay2)) <= intersection_y <= float(max(ay1, ay2))):
 
                                 intersection_x, intersection_y = format_coordinate(intersection_x, intersection_y)
                                 add_to_intersections_list(intersection_x, intersection_y, intersections_list)
@@ -388,23 +382,15 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
                                 add_to_intersections_list(bx2, by2, intersections_list)
 
                                 if ax2 >= ax1:
-
                                     add_to_edges([Point(ax1, ay1), Point(intersection_x, intersection_y), Point(ax2, ay2)], points_for_edges)
                                 else:
-
                                     add_to_edges([Point(ax2, ay2), Point(intersection_x, intersection_y), Point(ax1, ay1)], points_for_edges)
                                 if bx2 >= bx1:
 
                                     add_to_edges([Point(bx1, by1), Point(intersection_x, intersection_y), Point(bx2, by2)], points_for_edges)
                                 else:
-
                                     add_to_edges([Point(bx2, by2), Point(intersection_x, intersection_y), Point(bx1, by1)], points_for_edges)
 
-                                intersections_set.add(format_coordinate(intersection_x, intersection_y))
-                                intersections_set.add((ax1, ay1))
-                                intersections_set.add((ax2, ay2))
-                                intersections_set.add((bx1, by1))
-                                intersections_set.add((bx2, by2))
                             else:
                                 continue
                         else:
@@ -496,34 +482,30 @@ def find_vertex_and_edge(street_info_dict, points_for_edges):
                             else:
                                 #y = ka*x + ca
                                 #y = kb*x + cb
+
                                 intersection_x = float((cb - ca)/(ka - kb))
                                 intersection_y = float(ka*intersection_x + ca)
+                                if (float(min(bx1, bx2)) <= intersection_x <= float(max(bx1, bx2))) and (float(min(by1, by2)) <= intersection_y <= float(max(by1, by2))) and (float(min(ax1, ax2)) <= intersection_x <= float(max(ax1, ax2))) and (float(min(ay1, ay2)) <= intersection_y <= float(max(ay1, ay2))):
+                                    intersection_x, intersection_y = format_coordinate(intersection_x, intersection_y)
+                                    add_to_intersections_list(intersection_x, intersection_y, intersections_list)
+                                    add_to_intersections_list(ax1, ay1, intersections_list)
+                                    add_to_intersections_list(ax2, ay2, intersections_list)
+                                    add_to_intersections_list(bx1, by1, intersections_list)
+                                    add_to_intersections_list(bx2, by2, intersections_list)
 
-                                intersection_x, intersection_y = format_coordinate(intersection_x, intersection_y)
-                                add_to_intersections_list(intersection_x, intersection_y, intersections_list)
-                                add_to_intersections_list(ax1, ay1, intersections_list)
-                                add_to_intersections_list(ax2, ay2, intersections_list)
-                                add_to_intersections_list(bx1, by1, intersections_list)
-                                add_to_intersections_list(bx2, by2, intersections_list)
+                                    if ax2 >= ax1:
 
-                                if ax2 >= ax1:
+                                        add_to_edges([Point(ax1, ay1), Point(intersection_x, intersection_y), Point(ax2, ay2)], points_for_edges)
+                                    else:
 
-                                    add_to_edges([Point(ax1, ay1), Point(intersection_x, intersection_y), Point(ax2, ay2)], points_for_edges)
-                                else:
+                                        add_to_edges([Point(ax2, ay2), Point(intersection_x, intersection_y), Point(ax1, ay1)], points_for_edges)
+                                    if bx2 >= bx1:
 
-                                    add_to_edges([Point(ax2, ay2), Point(intersection_x, intersection_y), Point(ax1, ay1)], points_for_edges)
-                                if bx2 >= bx1:
+                                        add_to_edges([Point(bx1, by1), Point(intersection_x, intersection_y), Point(bx2, by2)], points_for_edges)
+                                    else:
 
-                                    add_to_edges([Point(bx1, by1), Point(intersection_x, intersection_y), Point(bx2, by2)], points_for_edges)
-                                else:
+                                        add_to_edges([Point(bx2, by2), Point(intersection_x, intersection_y), Point(bx1, by1)], points_for_edges)
 
-                                    add_to_edges([Point(bx2, by2), Point(intersection_x, intersection_y), Point(bx1, by1)], points_for_edges)
-
-                                intersections_set.add((intersection_x, intersection_y))
-                                intersections_set.add((ax1, ay1))
-                                intersections_set.add((ax2, ay2))
-                                intersections_set.add((bx1, by1))
-                                intersections_set.add((bx2, by2))
 
 
         display_vertex_result, reversed_result = display_intersections_list(intersections_list, intersections_dict)
@@ -551,21 +533,19 @@ def main():
             if command == 'a':
                 add_street(street_info, street_info_dict)
 
-            if command == 'c':
+            elif command == 'c':
                 change_street(street_info, street_info_dict)
 
-            if command == 'r':
+            elif command == 'r':
                 remove_street(street_info, street_info_dict)
 
-            if command == 'g':
-                # TODO find edge
+            elif command == 'g':
                 vertex, edges = find_vertex_and_edge(street_info_dict, points_for_edges)
                 print(vertex, file=sys.stdout)
                 print(edges, file=sys.stdout)
+            else:
+                raise Exception("unknown command")
 
-
-
-            print('read a line:', line)
         except Exception as exp:
             print('Error: ' + str(exp), file=sys.stderr)
             # print(traceback.format_exc())
