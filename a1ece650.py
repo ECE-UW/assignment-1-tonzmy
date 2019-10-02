@@ -123,6 +123,7 @@ def street_is_existed(name, street_info_dict):
 
 def add_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
+    street_name = street_name.upper()
     list_points = get_coordinates(street_info)
     if (street_is_existed(street_name, street_info_dict)):
         raise Exception('"a" specified for a street that has already existed')
@@ -132,6 +133,7 @@ def add_street(street_info, street_info_dict):
 
 def remove_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
+    street_name = street_name.upper()
     if (street_is_existed(street_name, street_info_dict)):
         del street_info_dict[street_name]
     else:
@@ -139,6 +141,7 @@ def remove_street(street_info, street_info_dict):
 
 def change_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
+    street_name = street_name.upper()
     list_points = get_coordinates(street_info)
     if (street_is_existed(street_name, street_info_dict)):
         street_info_dict[street_name] = list_points
@@ -541,16 +544,15 @@ def main():
 
             elif command == 'g':
                 vertex, edges = find_vertex_and_edge(street_info_dict, points_for_edges)
-                print(vertex, file=sys.stdout)
-                print(edges, file=sys.stdout)
+                print(vertex)
+                print(edges)
             else:
                 raise Exception("unknown command")
 
         except Exception as exp:
-            print('Error: ' + str(exp), file=sys.stderr)
+            print('Error: ' + str(exp))
             # print(traceback.format_exc())
 
-    print('Finished reading input')
     # return exit code 0 on successful termination
     sys.exit(0)
 
