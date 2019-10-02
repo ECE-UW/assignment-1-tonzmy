@@ -79,21 +79,9 @@ def parse_line(line):
         raise Exception("unknown command")
 
 def format_coordinate(x, y):
-    #check x
-    if isinstance(x, (int, long)):
-        pass
-    elif x.is_integer():
-        x = int(x)
-    else:
-        x = float("{0:.2f}".format(x))
-
-    # check y
-    if isinstance(y, (int, long)):
-        pass
-    elif y.is_integer():
-        y = int(y)
-    else:
-        y = float("{0:.2f}".format(y))
+    #check x, y
+    x = float("{0:.2f}".format(float(x)))
+    y = float("{0:.2f}".format(float(y)))
     return x, y
 
 
@@ -102,6 +90,7 @@ def get_street_name(input_info):
     street_name_begin = input_info.find("\"")
     street_name_end = input_info.find("\"", street_name_begin + 1)
     street_name = input_info[street_name_begin + 1 : street_name_end]
+    street_name = street_name.upper()
     return street_name
 
 def get_coordinates(input_info):
@@ -123,7 +112,6 @@ def street_is_existed(name, street_info_dict):
 
 def add_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
-    street_name = street_name.upper()
     list_points = get_coordinates(street_info)
     if (street_is_existed(street_name, street_info_dict)):
         raise Exception('"a" specified for a street that has already existed')
@@ -133,7 +121,6 @@ def add_street(street_info, street_info_dict):
 
 def remove_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
-    street_name = street_name.upper()
     if (street_is_existed(street_name, street_info_dict)):
         del street_info_dict[street_name]
     else:
@@ -141,7 +128,6 @@ def remove_street(street_info, street_info_dict):
 
 def change_street(street_info, street_info_dict):
     street_name = get_street_name(street_info)
-    street_name = street_name.upper()
     list_points = get_coordinates(street_info)
     if (street_is_existed(street_name, street_info_dict)):
         street_info_dict[street_name] = list_points
@@ -235,7 +221,9 @@ def display_intersections_list(intersections_list, intersections_dict):
 
     ss = 'V = {\n'
     for item in intersections_dict.items():
-        ss += "  {:<4}({},{})\n".format(str(item[0]) + ':', item[1][0], item[1][1])
+        a = "{0:.2f}".format(item[1][0])
+        b = "{0:.2f}".format(item[1][1])
+        ss += "  {:<4}({},{})\n".format(str(item[0]) + ':', a, b)
     ss += '}'
 
     return ss, reverse_intersections_dict
